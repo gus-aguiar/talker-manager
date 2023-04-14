@@ -6,4 +6,11 @@ async function readAll() {
     return talker;
 }
 
-module.exports = { readAll };
+async function getById(id) {
+    const data = await fs.readFile('src/talker.json', 'utf8');
+    const group = JSON.parse(data);
+    const personById = group.find((person) => Number(person.id) === Number(id));
+    return personById;
+}
+
+module.exports = { readAll, getById };
