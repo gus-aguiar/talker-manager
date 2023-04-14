@@ -13,4 +13,13 @@ async function getById(id) {
     return personById;
 }
 
-module.exports = { readAll, getById };
+async function login(email, password) {
+    let token = '';
+while (token.length < 16) {
+  token += Math.random().toString(36).substring(2);
+}
+token = token.substring(0, 16);
+    return token;
+}
+
+module.exports = { readAll, getById, login };
