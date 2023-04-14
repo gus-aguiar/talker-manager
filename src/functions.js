@@ -2,7 +2,7 @@ const fs = require('fs').promises;
 
 async function readAll() {
     const data = await fs.readFile('src/talker.json', 'utf8');
-    const talker = JSON.parse(data);
+    const talker = JSON.parse(data || '[]');
     return talker;
 }
 
@@ -22,4 +22,9 @@ token = token.substring(0, 16);
     return token;
 }
 
-module.exports = { readAll, getById, login };
+const writeJson = async (content) => {
+    const data = JSON.stringify(content);
+    await fs.writeFile('src/talker.json', data);
+  };
+
+module.exports = { readAll, getById, login, writeJson };

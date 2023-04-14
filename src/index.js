@@ -1,6 +1,24 @@
 const express = require('express');
-const { readAll, getById, login } = require('./functions');
+const crypto = require('crypto');
+const { readAll, getById, writeJson } = require('./functions');
 const validateLogin = require('./middleware/validateEmail');
+const { validateToken, 
+  validateName, 
+  validateAge, 
+  validateTalk, 
+  validateWatchedAt, 
+  validateRateOnetoFive,
+  validateRatePresence } = require('./middleware/validateTalker');
+
+const talkerValidators = [
+  validateToken, 
+  validateName, 
+  validateAge, 
+  validateTalk, 
+  validateWatchedAt, 
+  validateRatePresence,
+  validateRateOnetoFive,  
+];
 
 const app = express();
 app.use(express.json());
@@ -32,7 +50,13 @@ app.get('/talker/:id', async (req, res) => {
 });
 
 app.post('/login', validateLogin, async (req, res) => {
-  const { email, password } = req.body;
-  const token = await login(email, password);
+  const token = crypto.randomBytes(8).toString('hex');
   return res.status(200).json({ token });
+});
+
+app.post('/talker', talkerValidators, async (req, res) => {
+  const talker = await readAll();
+    const newId = talker[talker.length - 1].id + 1;
+    await writeJson([...talker, { ...req.body, id: newId }]);
+    return res.status(201).json({ ...req.body, id: newId });
 });
