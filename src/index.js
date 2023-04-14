@@ -1,4 +1,5 @@
 const express = require('express');
+const { readAll } = require('./functions');
 
 const app = express();
 app.use(express.json());
@@ -15,4 +16,7 @@ app.listen(PORT, () => {
   console.log('Online');
 });
 
-// initial commit
+app.get('/talker', async (_req, res) => {
+  const characters = await readAll();
+  return res.status(200).json(characters);
+});
