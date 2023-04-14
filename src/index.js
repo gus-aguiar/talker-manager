@@ -1,5 +1,6 @@
 const express = require('express');
 const { readAll, getById, login } = require('./functions');
+const validateLogin = require('./middleware/validateEmail');
 
 const app = express();
 app.use(express.json());
@@ -30,7 +31,7 @@ app.get('/talker/:id', async (req, res) => {
   return res.status(200).json(person);
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', validateLogin, async (req, res) => {
   const { email, password } = req.body;
   const token = await login(email, password);
   return res.status(200).json({ token });

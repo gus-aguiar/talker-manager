@@ -13,7 +13,7 @@ async function getById(id) {
     return personById;
 }
 
-async function login(email, password) {
+async function login(_email, _password) {
     let token = '';
 while (token.length < 16) {
   token += Math.random().toString(36).substring(2);
