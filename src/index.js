@@ -40,6 +40,12 @@ app.get('/talker', async (_req, res) => {
   return res.status(200).json(characters);
 });
 
+app.get('/talker/search', validateToken, async (req, res) => {
+  const { q } = req.query;
+  const talkers = await readAll();
+  const filteredTalkers = talkers.filter((talker) => talker.name.includes(q));
+  return res.status(200).json(filteredTalkers);
+});
 app.get('/talker/:id', async (req, res) => {
   const { id } = req.params;
   const person = await getById(id);
@@ -60,6 +66,7 @@ app.post('/talker', talkerValidators, async (req, res) => {
     await writeJson([...talker, { ...req.body, id: newId }]);
     return res.status(201).json({ ...req.body, id: newId });
 });
+
 
 app.put('/talker/:id', talkerValidators, async (req, res) => {
   const { id } = req.params;
@@ -87,3 +94,5 @@ app.delete('/talker/:id', validateToken, async (req, res) => {
   await writeJson(talkers);
   return res.status(204).json();
 });
+
+
