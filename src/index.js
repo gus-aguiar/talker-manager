@@ -75,3 +75,15 @@ talkers[index] = { id: Number(id), name, age, talk };
    await writeJson(talkers);
   return res.status(200).json(talkers[index]);
 });
+
+app.delete('/talker/:id', validateToken, async (req, res) => {
+  const { id } = req.params;
+  const talkers = await readAll();
+  const index = talkers.findIndex((d) => d.id === Number(id));
+  if (!talkers[index]) {
+    return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+  }
+  talkers.splice(index, 1);
+  await writeJson(talkers);
+  return res.status(204).json();
+});
