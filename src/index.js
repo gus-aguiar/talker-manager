@@ -60,3 +60,18 @@ app.post('/talker', talkerValidators, async (req, res) => {
     await writeJson([...talker, { ...req.body, id: newId }]);
     return res.status(201).json({ ...req.body, id: newId });
 });
+
+app.put('/talker/:id', talkerValidators, async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+  const { name, age, talk } = req.body;
+  const talkers = await readAll();
+  const index = talkers.findIndex((d) => d.id === Number(id));
+  if (!talkers[index]) {
+ return res.status(404)
+  .json({ message: 'Pessoa palestrante não encontrada' }); 
+}  
+talkers[index] = { id: Number(id), name, age, talk };
+   await writeJson(talkers);
+  return res.status(200).json(talkers[index]);
+});
