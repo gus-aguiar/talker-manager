@@ -73,6 +73,18 @@ function validateToken(req, res, next) {
   
     next();
   }
+
+  function validateDateOnQuery(req, res, next) {
+    const { date } = req.query;
+
+    if (date && (!/\d{2}\/\d{2}\/\d{4}/.test(date))) {
+      return res
+      .status(400)
+      .json({ message: 'O parâmetro "date" deve ter o formato "dd/mm/aaaa"' });
+    }
+  
+    next();
+  }
   
   function validateRateOnetoFive(req, res, next) {
     const { rate } = req.body.talk;
@@ -117,4 +129,5 @@ module.exports = {
     validateRateOnetoFive,
     validateRatePresence,
     validateRateOnQuery,
+    validateDateOnQuery,
 };
