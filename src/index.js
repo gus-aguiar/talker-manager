@@ -8,7 +8,8 @@ const { validateToken,
   validateTalk, 
   validateWatchedAt, 
   validateRateOnetoFive,
-  validateRatePresence } = require('./middleware/validateTalker');
+  validateRatePresence,
+  validateRateOnQuery } = require('./middleware/validateTalker');
 
 const talkerValidators = [
   validateToken, 
@@ -35,17 +36,24 @@ app.listen(PORT, () => {
   console.log('Online');
 });
 
+app.get('/talker/search', validateToken, validateRateOnQuery, async (req, res) => {
+  const { q, rate } = req.query;
+  const talkers = await readAll();
+  let filteredTalkers = talkers;
+  if (q) {
+    filteredTalkers = talkers.filter((talker) => talker.name.includes(q));
+  }
+  if (rate) {
+    filteredTalkers = filteredTalkers.filter((talker) => talker.talk.rate === Number(rate));
+  }
+  console.log(filteredTalkers);
+  return res.status(200).json(filteredTalkers);
+});
 app.get('/talker', async (_req, res) => {
   const characters = await readAll();
   return res.status(200).json(characters);
 });
 
-app.get('/talker/search', validateToken, async (req, res) => {
-  const { q } = req.query;
-  const talkers = await readAll();
-  const filteredTalkers = talkers.filter((talker) => talker.name.includes(q));
-  return res.status(200).json(filteredTalkers);
-});
 app.get('/talker/:id', async (req, res) => {
   const { id } = req.params;
   const person = await getById(id);
@@ -66,7 +74,6 @@ app.post('/talker', talkerValidators, async (req, res) => {
     await writeJson([...talker, { ...req.body, id: newId }]);
     return res.status(201).json({ ...req.body, id: newId });
 });
-
 
 app.put('/talker/:id', talkerValidators, async (req, res) => {
   const { id } = req.params;
@@ -94,5 +101,3 @@ app.delete('/talker/:id', validateToken, async (req, res) => {
   await writeJson(talkers);
   return res.status(204).json();
 });
-
-
